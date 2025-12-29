@@ -1,33 +1,75 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <base href="$FLUTTER_BASE_HREF">
+  <base href="/Sermain/">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Editor de Sermones">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
-  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Sermain">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <link rel="icon" type="image/png" href="favicon.png"/>
 
   <title>Sermain</title>
   <link rel="manifest" href="manifest.json">
 
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #F5F7FA;
+      /* Bloqueamos el scroll elástico que a veces cuelga la app en iPad */
+      position: fixed;
+      width: 100%;
+    }
+
+    body {
+      touch-action: none; 
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    /* Solo los inputs invisibles de Flutter pueden tener selección */
+    input, textarea, [contenteditable] {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+    }
+  </style>
+
   <script src="flutter.js" defer></script>
 </head>
-<body style="background-color: #F5F7FA;">
+<body>
   <script>
+    // --- BLOQUEO DE GESTOS DE SISTEMA PARA IPAD ---
+    // Esto evita que Safari abra menús de pegado con 3 dedos
+    document.addEventListener('touchstart', function (event) {
+      if (event.touches.length > 1) {
+        event.preventDefault();
+      }
+    }, { passive: false });
+
+    document.addEventListener('gesturestart', function (e) {
+      e.preventDefault();
+    });
+
+    // Bloqueamos el menú contextual nativo (el que sale al dejar presionado)
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
     window.addEventListener('load', function(ev) {
-      // Download main.dart.js
       _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          timeoutInMilliseconds: 4000,
-        },
         onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
+          engineInitializer.initializeEngine({
+            renderer: "canvaskit",
+            useColorEmoji: true
+          }).then(function(appRunner) {
             appRunner.runApp();
           });
         }
